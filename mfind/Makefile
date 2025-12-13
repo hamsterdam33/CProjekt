@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -pedantic -g -Iinclude
 
-SRC = src/main.c
+SRC = $(wildcard src/*.c)
 OBJ = $(SRC:.c=.o)
 
 mfind: $(OBJ)

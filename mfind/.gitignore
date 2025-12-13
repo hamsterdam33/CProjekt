@@ -1,0 +1,7 @@
+# build artifacts
+mfind
+*.o
+src/*.o
+
+# optional: editor stuff (nur wenn ihr das nicht teilen wollt)
+# .vscode/
