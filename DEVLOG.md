@@ -1,55 +1,47 @@
-# Development Log – mfind
+# Entwicklungsprotokoll – mfind
 
-This document is used as an internal development log for the `mfind` project.
-It tracks progress, open tasks, known issues, and priorities.
-
----
-
-## 📅 2025-12-13
-
-### ✅ Done
-- Repository structure created (`src/`, `include/`, `tests/`)
-- Makefile added and verified (`make`, `make clean`)
-- WSL + GCC development environment set up
-- GitHub SSH authentication configured
-- Initial README.md written
-- Build artifacts excluded via `.gitignore`
-
-### 🛠 In Progress
-- Designing `config_t` structure for argument parsing
-- Planning command-line option handling (`-name`, `-type`, depth options)
-
-### ⏭ Next
-- Implement argument parsing (`args.c / args.h`)
-- Validate command-line options
-- Add basic debug output for parsed config
-
-### ⚠ Known Issues / Notes
-- No actual directory traversal implemented yet
-- No tests available at this stage
+Dieses Dokument dient als internes Entwicklungsprotokoll für das Projekt `mfind`.
+Es hält fest, was bereits umgesetzt wurde, woran aktuell gearbeitet wird,
+welche Aufgaben als Nächstes anstehen und wo es noch offene Fragen oder Probleme gibt.
 
 ---
 
-## 📅 2025-12-XX (planned)
+## 📅 13.12.2025
 
-### ⏭ Next Milestones
-- Recursive directory traversal without filters
-- Implement filter logic (`filters.c`)
-- Combine traversal + filters
-- Add basic test scripts
+### ✅ Erledigt
+- Git-Repository initialisiert und Projektstruktur angelegt (`src/`, `include/`, `tests/`)
+- Makefile erstellt und erfolgreich getestet (`make`, `make clean`)
+- Entwicklungsumgebung mit WSL (Ubuntu) und GCC eingerichtet
+- GitHub-Zugriff über SSH konfiguriert
+- Build-Artefakte (`mfind`, `.o`-Dateien) per `.gitignore` ausgeschlossen
+- README.md mit Projektbeschreibung, Build- und Usage-Anleitung erstellt
+
+### 🛠 In Arbeit
+- Planung der internen Konfigurationsstruktur (`config_t`)
+- Konzeption des Argument-Parsings für Kommandozeilenoptionen
+  (`-name`, `-type`, `-maxdepth`, `-mindepth`)
+
+### ⏭ Nächste Schritte
+- Implementierung von `args.c` / `args.h`
+- Parsen und Validieren der Kommandozeilenargumente
+- Testweise Ausgabe der geparsten Konfiguration (Debug-Ausgabe)
+- Vorbereitung für die rekursive Verzeichnis-Traversierung
+
+### ⚠ Bekannte Einschränkungen / Hinweise
+- Es findet noch keine echte Verzeichnisdurchsuchung statt
+- Filter-Logik und Traversal sind noch nicht implementiert
+- Tests sind aktuell noch nicht vorhanden
 
 ---
 
-## 🧠 Design Decisions
-
-- Start with single-threaded traversal before adding parallelism
-- Keep filter logic separate from traversal logic
-- Follow best-effort error handling (log to stderr, continue if possible)
+## 🧠 Design-Entscheidungen
+- Zunächst Single-Thread-Implementierung, Parallelisierung erst später
+- Trennung von Traversierung und Filterlogik
+- Best-Effort-Fehlerbehandlung (Fehler nach `stderr`, Programm läuft weiter)
 
 ---
 
-## 📌 Open Questions
-
-- How should symbolic links be handled? (ignore vs follow)
-- Should multiple start directories be fully supported in MVP?
-- When to introduce threading: before or after full filter support?
+## ❓ Offene Fragen
+- Umgang mit symbolischen Links (ignorieren oder folgen?)
+- Unterstützung mehrerer Startverzeichnisse im MVP?
+- Zeitpunkt für die
