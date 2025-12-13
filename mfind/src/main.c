@@ -1,4 +1,6 @@
+#include <stdio.h>
+
 int main(void) {
-    printf("mfind\n");
+    printf("mfind works\n");
     return 0;
 }
