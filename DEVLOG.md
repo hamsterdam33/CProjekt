@@ -6,7 +6,7 @@ welche Aufgaben als Nächstes anstehen und wo es noch offene Fragen oder Problem
 
 ---
 
-## 📅 13.12.2025 
+## 📅 13.12.2025 14:24
 
 ### ✅ Erledigt
 - Git-Repository initialisiert und Projektstruktur angelegt (`src/`, `include/`, `tests/`)
@@ -98,3 +98,23 @@ welche Aufgaben als Nächstes anstehen und wo es noch offene Fragen oder Problem
 > - kein `*`  → direkter Wert
 > - ein `*`   → Adresse eines Werts
 > - zwei `*`  → Adresse einer Liste von Adressen
+>
+---
+
+## 📅 15.12.2025
+
+### ✅ Erledigt
+- `config_init()` implementiert und mit sinnvollen Default-Werten versehen
+- Initialisierung der Konfiguration erfolgreich in `main.c` getestet
+- Debug-Ausgaben zur Überprüfung der Default-Werte hinzugefügt
+- Include-/Build-Fehler in `main.c` behoben (`#include` wurde vom Compiler nicht erkannt)
+
+### 🧠 Erkenntnisse
+- `#include`-Direktiven werden vom Preprocessor verarbeitet und sind kein normaler C-Code
+- Editor-Anzeige kann vom tatsächlichen Dateiinhalt abweichen
+- Terminal-Ausgaben sind maßgeblich für Debugging
+
+### ⏭ Nächste Schritte
+- Debug-Ausgaben wieder entfernen oder hinter ein Flag legen
+- Entwurf und Implementierung von `parse_arguments(argc, argv, &cfg)`
+
