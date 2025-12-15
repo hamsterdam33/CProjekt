@@ -118,3 +118,37 @@ welche Aufgaben als Nächstes anstehen und wo es noch offene Fragen oder Problem
 - Debug-Ausgaben wieder entfernen oder hinter ein Flag legen
 - Entwurf und Implementierung von `parse_arguments(argc, argv, &cfg)`
 
+## 📅 15.12.2025 19:42
+### ✅ Erledigt
+- `parse_arguments(argc, argv, &cfg)` schrittweise implementiert
+- Unterstützung für folgende Optionen hinzugefügt:
+> - `-name <pattern>`
+> - `-type f|d`
+> - `-mindepth <n>`
+> - `-maxdepth <n>`
+- Dynamisches Sammeln von Startverzeichnissen (start_dirs) mittels realloc
+- Default-Startverzeichnis `"."` gesetzt, wenn keine Startdirs angegeben werden
+- Konsistenzprüfung: mindepth darf nicht größer als maxdepth sein
+- Robuste Integer-Validierung mit `strtol` umgesetzt
+- Debug-Ausgaben genutzt, um Parsing-Logik und Werte korrekt zu verifizieren
+- Mehrere typische C-Fehler identifiziert und behoben (Klammern, unreachable code, falsche Includes, Variablennamen)
+
+### 🧠 Erkenntnisse
+- Argument-Parsing in C erfordert explizite und defensive Programmierung
+- argc/argv müssen systematisch und in klarer Reihenfolge verarbeitet werden
+- continue ist essenziell, um Mehrfachverarbeitung von Argumenten zu vermeiden
+- Dynamische Arrays (char **) benötigen sauberes Speicher-Management
+- Fehlermeldungen früh auszugeben vereinfacht Debugging erheblich
+- Kleine Tippfehler (z. B. falsche Variablennamen oder Klammern) können große Compilerfehler verursachen
+- ASCII-Werte erklären, warum char-Variablen bei %d als Zahlen erscheinen
+
+###⚠️ Offene Punkte / TODO
+- `config_free()` implementieren, um allokierten Speicher `(strdup)` sauber freizugeben
+- Debug-Ausgaben konsolidieren oder über ein zentrales Debug-Flag steuern
+- Fehlerbehandlung ggf. vereinheitlichen (einheitliche Fehlermeldungen)
+- Unit-Tests bzw. einfache Testfälle für Argument-Parsing definieren
+
+### ⏭ Nächste Schritte
+- Speicherfreigabe `(config_free)` implementieren
+- Übergang von Argument-Parsing zu Traversal-Logik vorbereiten
+- Beginn der Verzeichnisdurchquerung basierend auf `config_t`
