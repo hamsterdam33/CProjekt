@@ -30,6 +30,8 @@ welche Aufgaben als Nächstes anstehen und wo es noch offene Fragen oder Problem
 ### ⚠ Bekannte Einschränkungen / Hinweise
 - Es findet noch keine echte Verzeichnisdurchsuchung statt
 - Filter-Logik und Traversal sind noch nicht implementiert
+
+
 - Tests sind aktuell noch nicht vorhanden
 
 ---
@@ -152,3 +154,52 @@ welche Aufgaben als Nächstes anstehen und wo es noch offene Fragen oder Problem
 - Speicherfreigabe `(config_free)` implementieren
 - Übergang von Argument-Parsing zu Traversal-Logik vorbereiten
 - Beginn der Verzeichnisdurchquerung basierend auf `config_t`
+
+---
+
+## 📅 25.12.2025
+### ✅ Erledigt
+
+- Rekursives Traversal-Gerüst (`traverse`) vollständig implementiert
+- Verzeichnisdurchlauf mit `opendir`, `readdir` und `closedir` umgesetzt
+- Erkennung von Dateien vs. Verzeichnissen mittels `lstat`
+- Endlosschleifen durch korrektes Überspringen von `.` und `..` verhindert
+- Sichere Pfad-Zusammenführung mit `snprintf`
+- Traversal sauber mit `main` verbunden (Start über konfigurierte Startdirs)
+- Funktionierender End-to-End-Test:  
+  `main → parse_arguments → traverse`
+- Fehlende Includes (`errno.h`) identifiziert und Build-Fehler behoben
+- Projekt erstmals als **„echtes Mini-find“** lauffähig (ohne Filter)
+
+---
+
+## 🧠 Erkenntnisse
+
+- Rekursion ist das natürliche Modell für Verzeichnis-Traversal
+- Traversal und Filterlogik sollten strikt getrennt sein
+- `lstat` ist essenziell, um Symlinks **nicht** zu folgen
+- Systemnahe C-APIs (`dirent`, `stat`) erfordern sorgfältiges Fehlerhandling
+- Kleine fehlende Includes können große Compilerfehler verursachen
+- Traversal einmal korrekt zu bauen spart später enorm viel Komplexität
+
+---
+
+## ⚠️ Offene Punkte / TODO
+
+- Filterlogik (`-name`, `-type`, `-empty`) in separater Funktion kapseln
+- `filters.c` mit echter Logik füllen
+- Ausgabe nur bei erfüllten Filterbedingungen
+- Optional: schönere Ausgabe  
+  - Tree-Style **vs.** Find-Style festlegen
+- Valgrind-Lauf durchführen, um Speicherverwaltung final zu prüfen
+
+---
+
+## ⏭ Nächste Schritte
+
+1. Implementierung von `matches_filters()`  
+   - Start mit `-type`
+2. Einbindung der Filter in das bestehende Traversal
+3. Schrittweise Erweiterung um  
+   - `-name` (`fnmatch`)  
+   - `-empty`
