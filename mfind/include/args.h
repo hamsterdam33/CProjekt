@@ -11,6 +11,9 @@ int max_depth;
 int parallel_threads;	
 };
 
+void config_free(struct config_t *cfg);
+// Pointer to make dynamic array of start directories
+
 // Funktionsprototypen
 void config_init(struct config_t *cfg);
     int parse_arguments(int argc, char **argv, struct config_t *cfg);

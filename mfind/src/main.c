@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "args.h"
+#include "traversal.h"
 
 //Function to print the configuration for debugging
 
@@ -8,6 +9,9 @@
     make clean
     make CFLAGS="-Wall -Wextra -pedantic -g -Iinclude -DDEBUG"
     // then run ./mfind -name test -type f || d
+
+    check for memory leaks with 
+    valgrind --leak-check=full --show-leak-kinds=all ./mfind src
 */
 
 static void print_config(const struct config_t *cfg) {
@@ -32,13 +36,24 @@ int main(int argc, char **argv) {
     config_init(&cfg);  
     
     if (parse_arguments(argc, argv, &cfg) != 0) { 
+        config_free(&cfg);
         return 1;
     }
+
+    for (int i = 0; i < cfg.num_start_dirs; i++) {
+        traverse(cfg.start_dirs[i], 0, &cfg);
+    }
+
 
     
 #ifdef DEBUG
      print_config(&cfg);
 #endif
+    return 0;
+
+    // Later: Tracersal here ...
+
+    config_free(&cfg);
     return 0;
 
 }

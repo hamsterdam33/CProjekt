@@ -67,6 +67,23 @@ void config_init(struct config_t *cfg)
     cfg->parallel_threads = 0;
 }
 
+void config_free(struct config_t *cfg)
+{
+    if (!cfg) return;
+
+    // Free each start directory string
+    for (int i = 0; i < cfg->num_start_dirs; i++) {
+        free(cfg->start_dirs[i]);
+    }
+
+    // Free the array of start directory pointers
+    free(cfg->start_dirs);
+
+    // Reset fields to default values
+    cfg->start_dirs = NULL;
+    cfg->num_start_dirs = 0;
+}
+
 // Parses command-line arguments and fills the config_t structure.
 int parse_arguments(int argc, char **argv, struct config_t *cfg)
 {
