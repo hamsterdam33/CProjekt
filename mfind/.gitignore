@@ -4,4 +4,5 @@ mfind
 src/*.o
 
 # optional: editor stuff (nur wenn ihr das nicht teilen wollt)
-# .vscode/
+.vscode/
+.vs/

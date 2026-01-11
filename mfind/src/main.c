@@ -8,7 +8,7 @@
     call debug through wsl 
     make clean
     make CFLAGS="-Wall -Wextra -pedantic -g -Iinclude -DDEBUG"
-    // then run ./mfind -name test -type f || d
+    // then run ./mfind -name test -type f || d 
 
     check for memory leaks with 
     valgrind --leak-check=full --show-leak-kinds=all ./mfind src
@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
    
     struct config_t cfg;
     // 1) Initialize configuration
-    config_init(&cfg);  
+    config_init(&cfg); 
     
     if (parse_arguments(argc, argv, &cfg) != 0) { 
         config_free(&cfg);
