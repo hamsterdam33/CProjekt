@@ -3,8 +3,37 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <errno.h>
+#include <math.h>
 
 #include "traversal.h"
+
+static int checkDepth(const struct config_t* cfg, int* depth) {
+    if ((cfg->max_depth >= *depth || cfg->max_depth < 0) &&
+        (cfg->min_depth <= *depth || cfg->min_depth < 0)) {
+        return 0;
+    }
+    else {
+        return 1;
+    }
+}
+
+static int checkFilesize(const char* path, const struct config_t* cfg) {
+    struct stat st;
+
+    if (stat(path, &st) != 0) {
+        return 1;
+    }
+
+    if ((st.st_size < cfg->size && cfg->sign == '-') ||
+        (st.st_size > cfg->size && cfg->sign == '+') ||
+        ((st.st_size + cfg->unit - 1) / cfg->unit == (cfg->size + cfg->unit - 1) / cfg->unit) ||
+        (cfg->size == 0 && cfg->sign == ' ')) {
+        return 0;
+    }
+    else {
+        return 1;
+    }
+}
 
 static int is_directory(const char *path)
 {
@@ -20,7 +49,11 @@ void traverse(const char *path, int depth, const struct config_t *cfg)
         (void)cfg; // Unused parameter
 
         // 1) print current path
-        printf("%s\n", path);
+        if (checkDepth(cfg, &depth) == 0 &&
+           (checkFilesize(path, cfg) == 0)) {
+                printf("%s\n", path);
+        }
+
 
         // 2) check if path is a directory
         if (!is_directory(path)) {
@@ -28,7 +61,7 @@ void traverse(const char *path, int depth, const struct config_t *cfg)
         }
 
         // 3) Open directory
-         DIR *dir = opendir(path);
+        DIR *dir = opendir(path);
         if (!dir) {
                  fprintf(stderr, "mfind: cannot open directory '%s': %s\n", path, strerror(errno));
                 return; // Not a directory or cannot open

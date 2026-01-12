@@ -62,12 +62,15 @@ void config_init(struct config_t *cfg)
     cfg->num_start_dirs = 0;
     cfg->name_pattern = NULL;
     cfg->type = 0;
-    cfg->min_depth = 0;
+    cfg->min_depth = -2;
     cfg->max_depth = -1;
+    cfg->size = 0; 
+    cfg->sign = ' ';
+    cfg->unit = 512;
     cfg->parallel_threads = 0;
 }
 
-void config_free(struct config_t *cfg)
+void config_free(struct config_t* cfg)
 {
     if (!cfg) return;
 
@@ -85,7 +88,7 @@ void config_free(struct config_t *cfg)
 }
 
 // Parses command-line arguments and fills the config_t structure.
-int parse_arguments(int argc, char **argv, struct config_t *cfg)
+int parse_arguments(int argc, char** argv, struct config_t* cfg)
 {
     for (int i = 1; i < argc; i++) {
 
@@ -139,6 +142,82 @@ int parse_arguments(int argc, char **argv, struct config_t *cfg)
                 fprintf(stderr, "mfind: invalid value for -maxdepth: %s\n", argv[i + 1]);
                 return 1;
             }
+            i++;
+            continue;
+        }
+
+        // -size 
+        if (strcmp(argv[i], "-size") == 0) {
+            if (i + 1 >= argc) {
+                fprintf(stderr, "mfind: missing argument after -size\n");
+                return 1;
+            }
+
+            if (parse_nonnegative_int(argv[i + 1], &cfg->size) == 0) {
+                cfg->size *= 512;
+                i++;
+                continue;
+            }
+
+            char* input = argv[i + 1];
+            size_t inputSize = strlen(input);
+
+            char num[inputSize + 1];
+
+            memcpy(num, input, inputSize * sizeof(char));
+            num[inputSize] = '\0';
+
+            cfg->unit = 512;
+
+            if (num[inputSize - 1] < '0' || num[inputSize - 1] > '9') {
+                switch (num[inputSize - 1]) {
+                    case 'c':
+                        cfg->unit = 1;
+                        num[inputSize - 1] = '\0';
+                        break;
+                    case 'k':
+                        cfg->unit = 1024;
+                        num[inputSize - 1] = '\0';
+                        break;
+                    case 'M':
+                        cfg->unit = 1048576;
+                        num[inputSize - 1] = '\0';
+                        break;
+                    default:
+                        fprintf(stderr, "mfind: invalid argument after -size\n");
+                        return 1;
+                }
+            }
+
+            if (num[0] == '-') {
+                cfg->sign = '-';
+                if (parse_nonnegative_int(&num[1], &cfg->size) != 0) {
+                    fprintf(stderr, "mfind: invalid argument after -size\n");
+                    return 1;
+                }
+            }
+            else if (num[0] == '+') {
+                cfg->sign = '+';
+                if (parse_nonnegative_int(&num[1], &cfg->size) != 0) {
+                    fprintf(stderr, "mfind: invalid argument after -size\n");
+                    return 1;
+                }
+            }
+            else {
+                if (parse_nonnegative_int(num, &cfg->size) != 0) {
+                    fprintf(stderr, "mfind: invalid argument after -size\n");
+                    return 1;
+                }
+                cfg->sign = ' ';
+            }
+
+            cfg->size *= cfg->unit;
+
+            printf("num: %s\n", num); //TEST
+            printf("unit: %i\n", cfg->unit); //TEST
+            printf("cfg->size: %i\n", cfg->size); //TEST
+            printf("cfg->sign: %c\n", cfg->sign); //TEST
+
             i++;
             continue;
         }
