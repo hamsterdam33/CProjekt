@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <errno.h>
 #include <math.h>
+#include "filters.h"
 
 #include "traversal.h"
 
@@ -46,13 +47,19 @@ static int is_directory(const char *path)
 
 void traverse(const char *path, int depth, const struct config_t *cfg)
 {
-        (void)cfg; // Unused parameter
+     // fprintf(stderr, "TRAVERSE %s\n", path);
+
+        // Check filters and print if matched
+        if (matches_filters(path, cfg)) {
+           // fprintf(stderr, "CHECK %s\n", path);
+            printf("%s\n", path);
+        }
 
         // 1) print current path
-        if (checkDepth(cfg, &depth) == 0 &&
-           (checkFilesize(path, cfg) == 0)) {
-                printf("%s\n", path);
-        }
+        //if (checkDepth(cfg, &depth) == 0 &&
+        //   (checkFilesize(path, cfg) == 0)) {
+        //        printf("%s\n", path);
+        //}
 
 
         // 2) check if path is a directory

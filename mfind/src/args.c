@@ -68,6 +68,7 @@ void config_init(struct config_t *cfg)
     cfg->sign = ' ';
     cfg->unit = 512;
     cfg->parallel_threads = 0;
+    cfg ->empty_flag = 0;
 }
 
 void config_free(struct config_t* cfg)
@@ -91,6 +92,12 @@ void config_free(struct config_t* cfg)
 int parse_arguments(int argc, char** argv, struct config_t* cfg)
 {
     for (int i = 1; i < argc; i++) {
+        
+        // -empty 
+        if(strcmp(argv[i], "-empty") == 0){
+            cfg->empty_flag = 1;
+            continue;
+        }
 
         // -name <pattern> 
         if (strcmp(argv[i], "-name") == 0) {
@@ -234,6 +241,7 @@ int parse_arguments(int argc, char** argv, struct config_t* cfg)
         fprintf(stderr, "mfind: unknown option: %s\n", argv[i]);
         return 1;
     }
+    
 
     // Default Startdir
     if (cfg->num_start_dirs == 0) {

@@ -11,7 +11,8 @@ int max_depth;
 int size;
 char sign;
 int unit;
-int parallel_threads;	
+int parallel_threads;
+int empty_flag; // 1 if -empty is set, 0 otherwise	
 };
 
 void config_free(struct config_t *cfg);

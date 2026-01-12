@@ -30,20 +30,21 @@ static void print_config(const struct config_t *cfg) {
 
 
 int main(int argc, char **argv) {
-   
+  
+    // fprintf(stderr, "MAIN START\n");
+
     struct config_t cfg;
     // 1) Initialize configuration
-    config_init(&cfg); 
-    
-    if (parse_arguments(argc, argv, &cfg) != 0) { 
-        config_free(&cfg);
-        return 1;
-    }
+    config_init(&cfg);     
+    parse_arguments(argc, argv, &cfg);
+
+    // fprintf(stderr, "START_DIRS = %d\n", cfg.num_start_dirs);
 
     for (int i = 0; i < cfg.num_start_dirs; i++) {
         traverse(cfg.start_dirs[i], 0, &cfg);
     }
-
+ 
+    
 
     
 #ifdef DEBUG
