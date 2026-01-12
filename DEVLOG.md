@@ -203,3 +203,46 @@ welche Aufgaben als Nächstes anstehen und wo es noch offene Fragen oder Problem
 3. Schrittweise Erweiterung um  
    - `-name` (`fnmatch`)  
    - `-empty`
+
+# 📅 12.01.2026
+
+### ✅ Erledigt
+- Filter-System implementiert und erfolgreich getestet:
+  - `-name <pattern>` (Shell-Pattern via `fnmatch`, z.B. `"*.c"`)
+  - `-type f|d` (Datei vs. Verzeichnis anhand `lstat` + `S_ISREG/S_ISDIR`)
+  - `-empty` (leere Dateien über `st_size == 0`, leere Ordner via `opendir/readdir`)
+- Filter-Logik sauber gekapselt in `matches_filters(path, cfg)` (`src/filters.c`)
+- Traversal so umgebaut, dass es **immer rekursiv durchläuft**, aber nur bei Match ausgibt:
+  - Ausgabe erfolgt ausschließlich, wenn `matches_filters(...) == 1`
+- Forward Declarations eingeführt, um “implicit declaration” / “conflicting types” Fehler zu vermeiden
+- Umfangreiche CLI-Tests durchgeführt:
+  - `./mfind . -name "*.c"` → nur `.c` Dateien
+  - `./mfind . -type d` / `-type f` → korrekte Typ-Filterung
+  - `./mfind tests/tmp -empty` → nur leere Datei + leerer Ordner
+  - Kombis wie `-empty -type f` und `-empty -type d` funktionieren korrekt
+
+### 🧠 Erkenntnisse
+- C kompiliert **top-down**: Funktionen müssen vor Benutzung bekannt sein  
+  → entweder Definition nach oben ziehen oder Forward Declaration verwenden
+- Debugging in C ist oft “mechanisch”:
+  - zuerst prüfen, ob Funktionen überhaupt aufgerufen werden (Smoke Test)
+  - dann schrittweise Filter aktivieren
+- `stdout` vs. `stderr` kann verwirrend sein (Debug-Ausgaben getrennt von normaler Ausgabe)
+
+### 🧹 Tech-Debt / Cleanup (kurzfristig)
+- Debug-Ausgaben entfernen (z.B. `MAIN START`, `START_DIRS`, `TRAVERSE`, `CHECK`)
+- Unused Code/Warnungen aufräumen:
+  - `checkDepth` / `checkFilesize` sind aktuell ungenutzt (temporär auskommentieren oder entfernen)
+
+### ⏭ Nächste Schritte (Priorität)
+1. **config_free() implementieren**  
+   - Speicher freigeben für `start_dirs` (durch `strdup` allokiert)  
+   - ggf. zukünftige dynamische Felder ebenfalls korrekt freigeben
+2. **parse_arguments finalisieren / Fehlerfälle härten**
+   - Default-Startdir `"."` sicher setzen, wenn kein Startdir angegeben wurde
+   - saubere Fehlermeldungen + Rückgabecodes
+3. **Filter/Traversal Integration im Team abstimmen**
+   - Wer übernimmt `-mindepth/-maxdepth` final?
+   - Wo sollen zusätzliche Filter landen: in `matches_filters` oder als separate Helper?
+4. **Tests strukturieren**
+   - einfache Test-Skripte in `tests/` (z.B. `bash`), damit Regressionen schnell auffallen
