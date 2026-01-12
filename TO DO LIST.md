@@ -11,14 +11,6 @@
   - `maxdepth`: Rekursion früh stoppen (Traversal-Abbruch).
   - `mindepth`: nur Ausgabe ab bestimmter Tiefe (Filter-/Print-Entscheidung).
 
-### Weitere Filter / Optionen (je nach Aufgabenstellung)
-- [ ] `-size` (M)
-  - Parsing von Zahlen + Einheit (z.B. 512-byte blocks / bytes), Vergleichlogik.
-- [ ] `-print` / Output-Format verbessern (S)
-  - Aktuell immer `printf("%s\n", path)` – ggf. Optionen für Format / Baumdarstellung.
-- [ ] Symlink-Verhalten definieren (S–M)
-  - Aktuell: keine Follow-Symlinks (best-effort). Optional: `-L`/`-P` Verhalten.
-
 ### Robustheit / Edge Cases
 - [ ] Fehlerbehandlung konsistent machen (S–M)
   - `opendir`/`lstat`/`snprintf` Fehler → stderr, Traversal läuft weiter.
