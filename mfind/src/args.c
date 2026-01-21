@@ -9,7 +9,9 @@
 static int add_start_dir(struct config_t *cfg, const char *dir)
 {
     char **new_start_dirs = realloc(cfg->start_dirs, (cfg->num_start_dirs + 1) * sizeof(char *));
-    
+    cfg->start_dirs = new_start_dirs;
+    cfg->start_dirs[cfg->num_start_dirs] = NULL; // safety
+
     if (!new_start_dirs) {
         fprintf(stderr, "mfind: out of memory err 01\n");
         return 1; // Memory allocation failure
@@ -79,10 +81,9 @@ void config_free(struct config_t* cfg)
     for (int i = 0; i < cfg->num_start_dirs; i++) {
         free(cfg->start_dirs[i]);
     }
-
     // Free the array of start directory pointers
     free(cfg->start_dirs);
-
+    
     // Reset fields to default values
     cfg->start_dirs = NULL;
     cfg->num_start_dirs = 0;

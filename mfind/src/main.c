@@ -29,35 +29,31 @@ static void print_config(const struct config_t *cfg) {
 }
 
 
-int main(int argc, char **argv) {
-  
-    // fprintf(stderr, "MAIN START\n");
-
+int main(int argc, char **argv)
+{
     struct config_t cfg;
-    // 1) Initialize configuration
-    config_init(&cfg);     
-    parse_arguments(argc, argv, &cfg);
+    int rc = 0;
 
-    // fprintf(stderr, "START_DIRS = %d\n", cfg.num_start_dirs);
+    config_init(&cfg);
+
+    if (parse_arguments(argc, argv, &cfg) != 0) {
+        rc = 1;
+        goto cleanup;
+    }
 
     for (int i = 0; i < cfg.num_start_dirs; i++) {
         traverse(cfg.start_dirs[i], 0, &cfg);
     }
- 
-    
 
-    
 #ifdef DEBUG
-     print_config(&cfg);
+    print_config(&cfg);
 #endif
-    return 0;
 
-    // Later: Tracersal here ...
-
+cleanup:
     config_free(&cfg);
-    return 0;
-
+    return rc;
 }
+
 
 
 
