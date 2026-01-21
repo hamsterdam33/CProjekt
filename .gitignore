@@ -12,3 +12,8 @@ mfind
 
 # editor
 .vscode/
+
+mfind/
+vgcore.*
+*.dSYM/
+tests/tmp_size/

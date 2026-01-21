@@ -8,6 +8,7 @@
 
 #include "traversal.h"
 
+#if 0
 static int checkDepth(const struct config_t* cfg, int* depth) {
     if ((cfg->max_depth >= *depth || cfg->max_depth < 0) &&
         (cfg->min_depth <= *depth || cfg->min_depth < 0)) {
@@ -35,6 +36,7 @@ static int checkFilesize(const char* path, const struct config_t* cfg) {
         return 1;
     }
 }
+#endif
 
 static int is_directory(const char *path)
 {
@@ -50,10 +52,15 @@ void traverse(const char *path, int depth, const struct config_t *cfg)
      // fprintf(stderr, "TRAVERSE %s\n", path);
 
         // Check filters and print if matched
-        if (matches_filters(path, cfg)) {
+        if (matches_filters(path, depth, cfg)) {
            // fprintf(stderr, "CHECK %s\n", path);
             printf("%s\n", path);
         }
+
+        if (cfg->max_depth >= 0 && depth >= cfg->max_depth) {
+            return; // Reached max depth, do not traverse further
+        }
+
 
         // 1) print current path
         //if (checkDepth(cfg, &depth) == 0 &&

@@ -3,7 +3,7 @@
 
 #include "args.h"
 
-int matches_filters(const char *path, const struct config_t *cfg);
+int matches_filters(const char *path, int depth, const struct config_t *cfg);
 
 #endif
 // ᨐฅ

@@ -4,15 +4,22 @@
 struct config_t {
 char **start_dirs;
 int num_start_dirs;
+
 const char *name_pattern;
 char type; // 'f', 'd' oder 0 = egal
+int empty_flag; // 1 if -empty is set, 0 otherwise	
+
 int min_depth;
 int max_depth;
-int size;
-char sign;
-int unit;
+
 int parallel_threads;
-int empty_flag; // 1 if -empty is set, 0 otherwise	
+
+int size_set; // 1 if size filter is set, 0 otherwise
+long size;
+char sign;
+long unit;
+
+
 };
 
 void config_free(struct config_t *cfg);
