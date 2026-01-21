@@ -1,0 +1,14 @@
+# build artifacts
+mfind
+*.o
+*.a
+*.so
+*.out
+
+# temp
+*.tmp
+*.swp
+.DS_Store
+
+# editor
+.vscode/

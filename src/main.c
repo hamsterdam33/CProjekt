@@ -14,19 +14,7 @@
     valgrind --leak-check=full --show-leak-kinds=all ./mfind src
 */
 
-static void print_config(const struct config_t *cfg) {
-    printf("=== config_init() test ===\n");
-    printf("num_start_dirs: %d\n", cfg->num_start_dirs);
-    for (int i = 0; i < cfg->num_start_dirs; i++) {
-    printf("start_dirs[%d]: %s\n", i, cfg->start_dirs[i]);
-    }
-    printf("name_pattern: %s\n", cfg->name_pattern ? cfg->name_pattern : "(NULL)");
-    printf("type: %c\n", cfg->type ? cfg->type : '0');
-    printf("min_depth: %d\n", cfg->min_depth);
-    printf("max_depth: %d\n", cfg->max_depth);
-    printf("parallel_threads: %d\n", cfg->parallel_threads);
-    printf("===========================\n");
-}
+
 
 
 int main(int argc, char **argv)
@@ -46,7 +34,19 @@ int main(int argc, char **argv)
     }
 
 #ifdef DEBUG
-    print_config(&cfg);
+   static void print_config(const struct config_t *cfg) {
+    printf("=== config_init() test ===\n");
+    printf("num_start_dirs: %d\n", cfg->num_start_dirs);
+    for (int i = 0; i < cfg->num_start_dirs; i++) {
+    printf("start_dirs[%d]: %s\n", i, cfg->start_dirs[i]);
+    }
+    printf("name_pattern: %s\n", cfg->name_pattern ? cfg->name_pattern : "(NULL)");
+    printf("type: %c\n", cfg->type ? cfg->type : '0');
+    printf("min_depth: %d\n", cfg->min_depth);
+    printf("max_depth: %d\n", cfg->max_depth);
+    printf("parallel_threads: %d\n", cfg->parallel_threads);
+    printf("===========================\n");
+}
 #endif
 
 cleanup:
