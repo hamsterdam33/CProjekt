@@ -22,3 +22,6 @@ void config_free(struct config_t *cfg);
 void config_init(struct config_t *cfg);
     int parse_arguments(int argc, char **argv, struct config_t *cfg);
 #endif
+
+void config_free(struct config_t *cfg);    
+    
