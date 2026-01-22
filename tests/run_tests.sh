@@ -3,6 +3,7 @@ set -euo pipefail
 
 PASS=0
 FAIL=0
+SKIP=0
 
 fail() {
     echo "❌ FAIL: $1"
@@ -12,6 +13,11 @@ fail() {
 pass() {
     echo "✅ PASS: $1"
     PASS=$((PASS + 1))
+}
+
+skip() {
+    echo "⚠️ SKIP: $1"
+    SKIP=$((SKIP + 1))
 }
 
 # Build
@@ -26,8 +32,21 @@ mkdir -p tests/tmp_size
 printf "abc" > tests/tmp_size/three            # 3 bytes
 dd if=/dev/zero of=tests/tmp_size/two_k bs=1 count=2048 status=none  # 2048 bytes
 
+# Fresh fixtures for premission-denied tests
+rm -rf tests/tmp_perm
+mkdir -p tests/tmp_perm/okdir tests/tmp_perm/noread
+
+echo "ok" > tests/tmp_perm/okdir/file.txt
+echo "secret" > tests/tmp_perm/noread/secret.txt
+
+# try to remove read permission (may be ignored on some WSL/windows setups)
+chmod 000 tests/tmp_perm/noread 2>/dev/null || true 
+
 cleanup_tmp() {
   rm -rf tests/tmp_size
+  
+  chmod 755 tests/tmp_perm/noread 2>/dev/null || true
+    rm -rf tests/tmp_perm
 }
 trap cleanup_tmp EXIT
 
@@ -74,9 +93,6 @@ expect_stderr_grep() {
     set -e
     grep -qE "$pattern" /tmp/mfind_err.txt;
 }
-
-
-
 
     ### Tests ###
 
@@ -125,10 +141,39 @@ expect_stderr_grep() {
     # 13) -size -4c finds 0-byte and 3-byte files (both are <4c)
     if expect_stdout_grep "tests/tmp_size/empty" ./mfind tests/tmp_size -type f -size -4c && expect_stdout_grep "tests/tmp_size/three" ./mfind tests/tmp_size -type f -size -4c; then pass "-size -4c finds empty and three-byte files"; else fail "-size -4c finds empty and three-byte files"; fi
 
+    # 14) Permission-denied directory should not crash, should continue
+    set +e
+    ls tests/tmp_perm/noread >/dev/null 2>&1
+    ls_rc=$?
+    set -e
+
+    if [ "$ls_rc" -eq 0 ]; then
+        skip "permission-denied test skipped (filesystem ignores chmod permissions)"
+    else
+        set +e
+        ./mfind tests/tmp_perm -type f >/tmp/mfind_out.txt 2>/tmp/mfind_err.txt
+        rc=$?
+        set -e
+
+        if [ "$rc" -ne 0 ]; then
+            fail "permission-denied run exits non-zero (rc=$rc)"
+        elif ! grep -qE "tests/tmp_perm/okdir/file\.txt" /tmp/mfind_out.txt; then
+            fail "permission-denied run still finds accessible files"
+        elif grep -qE "tests/tmp_perm/noread" /tmp/mfind_out.txt; then
+            fail "permission-denied run should not list files inside noread"
+        elif ! grep -qiE "Permission denied|cannot open directory" /tmp/mfind_err.txt; then
+            fail "permission-denied run reports error to stderr"
+        else
+            pass "permission-denied directory handled (continues)"
+        fi
+    fi
+
     # Summary
     echo 
     echo "Pass: $PASS"
     echo "Fail: $FAIL"
+    echo "Skip: $SKIP"
+
     if [ $FAIL -eq 0 ]; then
         echo "All tests passed!"
         exit 0
