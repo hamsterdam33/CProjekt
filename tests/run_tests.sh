@@ -94,6 +94,65 @@ expect_stderr_grep() {
     grep -qE "$pattern" /tmp/mfind_err.txt;
 }
 
+# Helper: compare stdout of two commands (order independent)
+# usage:
+#  expect_stdout_eq_cmds "<cmd1 args...>" "<cmd2 args...>"
+
+expect_stdout_sorted_equal() {
+    local desc="$1"
+    shift
+
+    #split args at first "--"
+    if [ "${1:-}" != "--"]; then 
+        echo "internal test error: missing -- before cmd1" >&2
+        return 1
+    fi
+    shift
+
+    local out1="/tmp/mfind_out1.txt"
+    local err1="/tmp/mfind_err1.txt"
+    local out2="/tmp/mfind_out2.txt"
+    local err2="/tmp/mfind_err2.txt"
+
+    #collect cmd1 until next "--"
+    local cmd1=()
+    while [ $# -gt 0 ] && [ "$1" != "--" ]; do
+        cmd1+=("$1")
+        shift
+    done
+
+    if [ "${1:-}" != "--"]; then 
+        echo "internal test error: missing -- before cmd2" >&2
+        return 1
+    fi
+    shift
+
+    local cmd2=("$@")
+
+    # run both 
+    set +e
+    "${cmd1[@]}" >"$out1" 2>"$err1"
+    local rc1=$?
+    "${cmd2[@]}" >"$out2" 2>"$err2"
+    local rc2=$?
+    set -e
+
+    # both must succeed
+    if [ $rc1 -ne 0 ] || [ $rc2 -ne 0 ]; then
+        echo "❌ $desc (rc1=$rc1 rc2=$rc2)" >&2
+        echo "--- stderr cmd1 ---" >&2; cat "$err1" >&2
+        echo "--- stderr cmd2 ---" >&2; cat "$err2" >&2
+        return 1
+    fi
+
+    # compare sorted stdout
+    LC_ALL=C sort "$out1" > "${out1}.sorted"
+    LC_ALL=C sort "$out2" > "${out2}.sorted"
+
+    diff -u "${out1}.sorted" "${out2}.sorted" >/dev/null 2>&1
+}
+
+
     ### Tests ###
 
     # 1) Smoke runs 
@@ -167,6 +226,40 @@ expect_stderr_grep() {
             pass "permission-denied directory handled (continues)"
         fi
     fi
+
+    # 15) -j basic: accepted + exit 0
+    if expect_exit 0 ./mfind . -j 2; then pass "-j 2 runs"; else fail "-j 2 runs"; fi
+
+    # 16) -j invalid: missing argument
+    if expect_exit 1 ./mfind . -j; then pass "error on missing -j arg"; else fail "error on missing -j arg"; fi
+
+    # 17) -j invalid: non-number
+    if expect_exit 1 ./mfind . -j abc; then pass "error on non-numeric -j"; else fail "error on non-numeric -j"; fi
+
+    # 18) -j invalid: zero / negative
+    if expect_exit 1 ./mfind . -j 0; then pass "error on -j 0"; else fail "error on -j 0"; fi
+    if expect_exit 1 ./mfind . -j -1; then pass "error on -j -1"; else fail "error on -j -1"; fi
+
+    # 19) -j should NOT change result set (order-independent compare)
+    if expect_stdout_sorted_equal "-j keeps same results (-name args.c)" \
+        -- ./mfind . -name "args.c" \
+        -- ./mfind . -name "args.c" -j 4
+    then
+        pass "-j keeps same results (-name args.c)"
+    else
+        fail "-j keeps same results (-name args.c)"
+    fi
+
+    # 20) -j with multiple start dirs: should match baseline result set
+    if expect_stdout_sorted_equal "-j keeps same results (multi start dirs)" \
+        -- ./mfind tests/tmp tests/tmp_size -type f \
+        -- ./mfind tests/tmp tests/tmp_size -type f -j 4
+    then
+        pass "-j keeps same results (multi start dirs)"
+    else
+        fail "-j keeps same results (multi start dirs)"
+    fi
+ 
 
     # Summary
     echo 
