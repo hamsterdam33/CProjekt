@@ -109,7 +109,7 @@ void config_init(struct config_t *cfg)
     cfg->type = 0;
     cfg->min_depth = 0;
     cfg->max_depth = -1;
-    cfg->parallel_threads = 0;
+    cfg->parallel_threads = 1;
 
     cfg->size_set = 0;
     cfg->size = 0; 
@@ -194,6 +194,20 @@ int parse_arguments(int argc, char** argv, struct config_t* cfg)
             }
             if (parse_nonnegative_int(argv[i + 1], &cfg->max_depth) != 0) {
                 fprintf(stderr, "mfind: invalid value for -maxdepth: %s\n", argv[i + 1]);
+                return 1;
+            }
+            i++;
+            continue;
+        }
+
+        // -j <n>
+        if (strcmp(argv[i], "-j") == 0) {
+            if (i + 1 >= argc) {
+                fprintf(stderr, "mfind: missing argument after -j\n");
+                return 1;
+            }
+            if (parse_nonnegative_int(argv[i + 1], &cfg->parallel_threads) != 0 || cfg->parallel_threads <= 0) {
+                fprintf(stderr, "mfind: invalid value for -j: %s\n", argv[i + 1]);
                 return 1;
             }
             i++;
