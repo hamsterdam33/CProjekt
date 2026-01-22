@@ -1,5 +1,7 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -pedantic -g -Iinclude
+CPPFLAGS = -Iinclude
+CFLAGS = -Wall -Wextra -pedantic -g
+LDFLAGS = -pthread
 
 SRC = $(wildcard src/*.c)
 OBJ = $(SRC:.c=.o)
@@ -9,10 +11,10 @@ OBJ = $(SRC:.c=.o)
 all: mfind
 
 mfind: $(OBJ)
-	$(CC) $(CFLAGS) -o mfind $(OBJ)
+	$(CC) $(CFLAGS) -o mfind $(OBJ) $(LDFLAGS)
 
 clean:
 	rm -f $(OBJ) mfind
 	
 test: all
-	./tests/run_tests.sh
+	bash ./tests/run_tests.sh
