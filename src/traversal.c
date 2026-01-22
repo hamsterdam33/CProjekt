@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <errno.h>
 #include <math.h>
+#include <unistd.h>
 #include "filters.h"
 
 #include "traversal.h"
@@ -54,7 +55,9 @@ void traverse(const char *path, int depth, const struct config_t *cfg)
         // Check filters and print if matched
         if (matches_filters(path, depth, cfg)) {
            // fprintf(stderr, "CHECK %s\n", path);
-            printf("%s\n", path);
+            //printf("%s\n", path);
+            write(STDOUT_FILENO, path, strlen(path));
+            write(STDOUT_FILENO, "\n", 1);
         }
 
         if (cfg->max_depth >= 0 && depth >= cfg->max_depth) {
