@@ -1,0 +1,7 @@
+# Shell-Skripte immer mit LF
+*.sh text eol=lf
+
+# Optional: C-Quellcode auch sauber halten
+*.c  text eol=lf
+*.h  text eol=lf
+Makefile text eol=lf
