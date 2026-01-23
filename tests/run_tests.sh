@@ -103,7 +103,7 @@ expect_stdout_sorted_equal() {
     shift
 
     #split args at first "--"
-    if [ "${1:-}" != "--"]; then 
+    if [ "${1:-}" != "--" ]; then 
         echo "internal test error: missing -- before cmd1" >&2
         return 1
     fi
@@ -121,7 +121,7 @@ expect_stdout_sorted_equal() {
         shift
     done
 
-    if [ "${1:-}" != "--"]; then 
+    if [ "${1:-}" != "--" ]; then 
         echo "internal test error: missing -- before cmd2" >&2
         return 1
     fi

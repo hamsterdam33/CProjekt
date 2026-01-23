@@ -61,6 +61,17 @@ int matches_filters(const char *path, int depth, const struct config_t *cfg) {
         return 0;
     }
 
+    // -empty
+     if (cfg->empty_flag) {
+        if (S_ISREG(st.st_mode)) {
+            if (st.st_size != 0) return 0;
+        } else if (S_ISDIR(st.st_mode)) {
+            if (!is_empty_dir(path)) return 0;
+        } else {
+            return 0; // other types are not considered empty
+        }
+    }
+
     // -type 
     if (cfg->type == 'f' && !S_ISREG(st.st_mode)) {
         return 0;
@@ -90,16 +101,7 @@ int matches_filters(const char *path, int depth, const struct config_t *cfg) {
         }
     }
 
-    // -empty
-     if (cfg->empty_flag) {
-        if (S_ISREG(st.st_mode)) {
-            if (st.st_size != 0) return 0;
-        } else if (S_ISDIR(st.st_mode)) {
-            if (!is_empty_dir(path)) return 0;
-        } else {
-            return 0; // other types are not considered empty
-        }
-    }
+    
 
     return 1; // all filters passed
 }
